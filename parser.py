@@ -31,6 +31,7 @@ def get_all_follower_slugs() -> list[str]:
             continue
         else:
             follower_slugs.extend(publisher_followers)
+    logger.info(f'Найдено {len(set(follower_slugs))} пользователей для обработки')
     return list(set(follower_slugs))
 
 
@@ -44,10 +45,12 @@ def get_follower(follower_slug: str) -> User:
 def get_followers() -> list[User]:
     followers = []
     follower_slugs = get_all_follower_slugs()
-    for follower_slug in follower_slugs:
+    for index, follower_slug in enumerate(follower_slugs):
         try:
+            logger.info(f'Обработка пользователя "{follower_slug}", осталось {len(follower_slugs) - index} пользователей')
             follower = get_follower(follower_slug=follower_slug)
         except ConnectionError:
+            logger.warning(f'Пользователь "{follower_slug}" запретил просмотр информации о себе')
             continue
         else:
             followers.append(follower)
