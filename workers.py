@@ -1,6 +1,6 @@
-import config
-
 import requests
+
+import config
 
 
 class UserHttpWorker:

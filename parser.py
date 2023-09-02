@@ -1,5 +1,6 @@
 from models import User
 from workers import UserHttpWorker
+from logging_config import logger
 
 
 http_worker = UserHttpWorker()
@@ -8,6 +9,7 @@ http_worker = UserHttpWorker()
 def get_publisher_slugs() -> list[str]:
     json_data = http_worker.get_user_list(user_type='trending-publishers', limit=10000)
     slugs = [publisher['profile']['slug'] for publisher in json_data]
+    logger.info(f'Найдено {len(slugs)} журналов для обработки')
     return slugs
 
 
@@ -20,9 +22,15 @@ def get_publisher_follower_slugs(publisher_slug: str) -> list[str]:
 def get_all_follower_slugs() -> list[str]:
     follower_slugs = []
     publisher_slugs = get_publisher_slugs()
-    for publisher_slug in publisher_slugs:
-        publisher_followers = get_publisher_follower_slugs(publisher_slug)
-        follower_slugs.extend(publisher_followers)
+    for index, publisher_slug in enumerate(publisher_slugs):
+        logger.info(f'Обработка журнала "{publisher_slug}", осталось {len(publisher_slugs) - index} журналов')
+        try:
+            publisher_followers = get_publisher_follower_slugs(publisher_slug)
+        except ConnectionError:
+            logger.warning(f'Не удалось собрать подписчиков журнала "{publisher_slug}"')
+            continue
+        else:
+            follower_slugs.extend(publisher_followers)
     return list(set(follower_slugs))
 
 
@@ -37,7 +45,12 @@ def get_followers() -> list[User]:
     followers = []
     follower_slugs = get_all_follower_slugs()
     for follower_slug in follower_slugs:
-        followers.append(get_follower(follower_slug=follower_slug))
+        try:
+            follower = get_follower(follower_slug=follower_slug)
+        except ConnectionError:
+            continue
+        else:
+            followers.append(follower)
     return followers
 
 
@@ -51,4 +64,5 @@ def write_data_to_file():
 
 
 if __name__ == '__main__':
+    logger.info(msg='Программа начала работу, ищем популярные журналы')
     write_data_to_file()
