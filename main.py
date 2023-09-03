@@ -2,7 +2,7 @@ import asyncio
 
 from file_writer import write_followers_to_file
 from logging_config import logger
-from parser import get_followers
+from kavyar_parser import get_followers
 
 
 if __name__ == '__main__':
