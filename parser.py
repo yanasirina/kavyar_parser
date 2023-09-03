@@ -28,7 +28,7 @@ async def get_all_follower_slugs() -> list[str]:
     follower_slugs = []
     publisher_slugs = get_publisher_slugs()
 
-    connector = aiohttp.TCPConnector(limit=50)
+    connector = aiohttp.TCPConnector(limit=10)
     async with aiohttp.ClientSession(connector=connector) as session:
         tasks = []
         for publisher_slug in publisher_slugs:
@@ -53,7 +53,7 @@ async def get_follower(session, follower_slug: str) -> Optional[User]:
 
 async def get_followers(publisher_slug=None) -> list[User]:
     followers = []
-    connector = aiohttp.TCPConnector(force_close=True)
+    connector = aiohttp.TCPConnector(limit=10)
     async with aiohttp.ClientSession(connector=connector) as session:
         if publisher_slug:
             follower_slugs = await get_publisher_follower_slugs(session=session, publisher_slug=publisher_slug)
