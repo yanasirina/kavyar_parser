@@ -51,7 +51,7 @@ async def get_follower(session, follower_slug: str) -> Optional[User]:
         return User(slug=follower_slug, email=email, instagram=instagram)
 
 
-async def get_followers(publisher_slug) -> list[User]:
+async def get_followers(publisher_slug=None) -> list[User]:
     followers = []
     connector = aiohttp.TCPConnector(force_close=True)
     async with aiohttp.ClientSession(connector=connector) as session:
@@ -67,7 +67,9 @@ async def get_followers(publisher_slug) -> list[User]:
         await asyncio.gather(*tasks)
 
         for task in tasks:
-            followers.append(await task)
+            follower = await task
+            if follower:
+                followers.append(await task)
         logger.info(f'Найдено {len(set(follower_slugs))} пользователей для обработки')
 
     return followers

@@ -7,5 +7,5 @@ from parser import get_followers
 
 if __name__ == '__main__':
     logger.info(msg='Программа начала работу, ищем популярные журналы')
-    followers = asyncio.run(get_followers(publisher_slug='redline-magazine'))
+    followers = asyncio.run(get_followers())
     write_followers_to_file(followers=followers)
