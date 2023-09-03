@@ -1,6 +1,7 @@
 import requests
 
 import config
+from logging_config import logger
 
 
 class UserHttpWorker:
@@ -16,18 +17,22 @@ class UserHttpWorker:
         else:
             raise ConnectionError("kavyar.com didn't answer")
 
-    def get_user_detail(self, user_slug: str):
+    async def get_user_detail(self, session, user_slug: str):
         url = self.base_url + f'profiles/{user_slug}'
-        response = requests.get(url, headers=self.headers)
-        if response.status_code == 200:
-            return response.json()['payload'][0]['records'][0]
-        else:
-            raise ConnectionError("kavyar.com didn't answer")
+        async with session.get(url) as resp:
+            logger.info(f'Обработка пользователя "{user_slug}"')
+            if resp.status == 200:
+                json_resp = await resp.json()
+                return json_resp['payload'][0]['records'][0]
+            else:
+                return None
 
-    def get_user_followers(self, user_slug: str, limit: int = 1000):
+    async def get_user_followers(self, session, user_slug: str, limit: int = 1000):
         url = self.base_url + f'profiles/{user_slug}/followers?limit={limit}'
-        response = requests.get(url, headers=self.headers)
-        if response.status_code == 200:
-            return response.json()['payload'][0]['records']
-        else:
-            raise ConnectionError("kavyar.com didn't answer")
+        async with session.get(url) as resp:
+            logger.info(f'Обработка журнала "{user_slug}"')
+            if resp.status == 200:
+                json_resp = await resp.json()
+                return json_resp['payload'][0]['records']
+            else:
+                raise ConnectionError("kavyar.com didn't answer")
