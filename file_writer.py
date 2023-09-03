@@ -1,9 +1,11 @@
 import datetime
 
+from logging_config import logger
 from models import User
 
 
 def write_instagrams(followers: list[User]):
+    logger.info(msg='Собираем инстаграмы.')
     current_time = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     with open(f'instagrams_{current_time}.txt', 'w') as file:
         for follower in followers:
@@ -12,6 +14,7 @@ def write_instagrams(followers: list[User]):
 
 
 def write_emails(followers: list[User]):
+    logger.info(msg='Собираем электронные адреса.')
     current_time = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     with open(f'emails_{current_time}.txt', 'w') as file:
         for follower in followers:
@@ -20,6 +23,7 @@ def write_emails(followers: list[User]):
 
 
 def write_slugs_emails_instagrams(followers: list[User]):
+    logger.info(msg='Собираем общую информацию.')
     current_time = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     with open(f'info_{current_time}.txt', 'w') as file:
         for follower in followers:
