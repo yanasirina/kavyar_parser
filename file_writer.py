@@ -1,7 +1,9 @@
 import datetime
 
+from models import User
 
-def write_instagrams(followers):
+
+def write_instagrams(followers: list[User]):
     current_time = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     with open(f'instagrams_{current_time}.txt', 'w') as file:
         for follower in followers:
@@ -9,7 +11,7 @@ def write_instagrams(followers):
                 file.write(f'{follower.instagram}\n')
 
 
-def write_emails(followers):
+def write_emails(followers: list[User]):
     current_time = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     with open(f'emails_{current_time}.txt', 'w') as file:
         for follower in followers:
@@ -17,7 +19,7 @@ def write_emails(followers):
                 file.write(f'{follower.email}\n')
 
 
-def write_slugs_emails_instagrams(followers):
+def write_slugs_emails_instagrams(followers: list[User]):
     current_time = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     with open(f'info_{current_time}.txt', 'w') as file:
         for follower in followers:
@@ -29,7 +31,7 @@ def write_slugs_emails_instagrams(followers):
             file.write('\n')
 
 
-def write_followers_to_file(followers):
+def write_followers_to_file(followers: list[User]):
     write_instagrams(followers=followers)
     write_emails(followers=followers)
     write_slugs_emails_instagrams(followers=followers)

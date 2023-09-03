@@ -1,3 +1,6 @@
+from typing import Optional
+
+import aiohttp
 import requests
 
 import config
@@ -9,7 +12,7 @@ class UserHttpWorker:
         self.base_url = base_url
         self.headers = {"user-agent": "Mozilla/5.0"}
 
-    def get_user_list(self, user_type: str, limit: int = 1000):
+    def get_user_list(self, user_type: str, limit: int = 1000) -> dict:
         url = self.base_url + f'discover/{user_type}?limit={limit}'
         response = requests.get(url, headers=self.headers, timeout=10000)
         if response.status_code == 200:
@@ -17,7 +20,7 @@ class UserHttpWorker:
         else:
             raise ConnectionError("kavyar.com didn't answer")
 
-    async def get_user_detail(self, session, user_slug: str):
+    async def get_user_detail(self, session: aiohttp.ClientSession, user_slug: str) -> Optional[dict]:
         url = self.base_url + f'profiles/{user_slug}'
         async with session.get(url, headers=self.headers, timeout=10000) as resp:
             logger.info(f'Обработка пользователя "{user_slug}"')
@@ -27,7 +30,7 @@ class UserHttpWorker:
             else:
                 return None
 
-    async def get_user_followers(self, session, user_slug: str, limit: int = 1000):
+    async def get_user_followers(self, session: aiohttp.ClientSession, user_slug: str, limit: int = 1000) -> dict:
         url = self.base_url + f'profiles/{user_slug}/followers?limit={limit}'
         async with session.get(url, headers=self.headers, timeout=10000) as resp:
             logger.info(f'Обработка журнала "{user_slug}"')

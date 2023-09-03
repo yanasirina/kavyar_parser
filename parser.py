@@ -18,7 +18,7 @@ def get_publisher_slugs() -> list[str]:
     return slugs
 
 
-async def get_publisher_follower_slugs(session, publisher_slug: str) -> list[str]:
+async def get_publisher_follower_slugs(session: aiohttp.ClientSession, publisher_slug: str) -> list[str]:
     json_data = await http_worker.get_user_followers(session=session, user_slug=publisher_slug, limit=100000)
     slugs = [follower['slug'] for follower in json_data]
     return slugs
@@ -43,7 +43,7 @@ async def get_all_follower_slugs() -> list[str]:
     return list(set(follower_slugs))
 
 
-async def get_follower(session, follower_slug: str) -> Optional[User]:
+async def get_follower(session: aiohttp.ClientSession, follower_slug: str) -> Optional[User]:
     json_data = await http_worker.get_user_detail(session=session, user_slug=follower_slug)
     if json_data:
         email = json_data['detail']['contact'].get('email')
